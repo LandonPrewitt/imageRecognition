@@ -1,22 +1,33 @@
 package com.landonprewitt.imageRecognition.data.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import java.util.List;
 
 @Data
+@NoArgsConstructor
 @AllArgsConstructor
-@RequiredArgsConstructor
 @Entity
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Image {
 
-    private String id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
     private String label;
-    private final String imageSrc;
-    private List<String> detectedObjects;
+    private String imageSrc;
     private boolean objectionDetectionEnabled;
 
+    @SuppressWarnings("JpaAttributeTypeInspection")
+    @Type(type = "list-array")
+    private String[] detectedObjects;
 }
