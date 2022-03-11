@@ -4,3 +4,16 @@ springdoc:
 
 server:
   port: 8080
+
+spring:
+  application:
+    name: ImageRecognition
+  datasource:
+    url: jdbc:postgresql://localhost:5432/imagedb
+    username: postgres
+    password: postgres
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: create
+

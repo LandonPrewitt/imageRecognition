@@ -2,6 +2,7 @@ package com.landonprewitt.imageRecognition.controller;
 
 import com.landonprewitt.imageRecognition.data.entity.Image;
 import com.landonprewitt.imageRecognition.data.repository.ImageRepository;
+import com.landonprewitt.imageRecognition.exception.ImageNotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -43,7 +44,22 @@ public class ImageController {
     @GetMapping(path = "", produces = "application/json")
     public ResponseEntity<List<Image>> getImagesByObjects(@RequestParam(required = false) String objects) {
         log.info(String.format("objects = %s", objects));
-        return ResponseEntity.ok(imageRepository.getAllImages());
+
+        if (objects instanceof String) {
+            // todo : find by Objects
+            log.info("Instance of String");
+
+        } else if (objects == null) {
+            // todo : find ALL images
+            log.info("Instance of null");
+        } else {
+            // todo : return 404
+            log.info("getImagesByObjects 404");
+        }
+
+        String[] names = {"hello", "hi"};
+
+        return ResponseEntity.ok(imageRepository.findAll());
     }
 
     @Operation(summary = "Retrieves Images by their ID",
@@ -57,14 +73,17 @@ public class ImageController {
                     content = {@Content()})
     })
     @GetMapping(path = "/{imageId}", produces = "application/json")
-    public ResponseEntity<List<Image>> getImageById(@PathVariable String imageId) {
+    public ResponseEntity<Image> findById(@PathVariable Integer imageId) {
         log.info(String.format("getImageById: %s", imageId));
-        return ResponseEntity.ok(imageRepository.getAllImages());
+        Image image = imageRepository.findImageById(imageId).orElseThrow(
+                () -> new ImageNotFoundException("Image Not Found by id : " + imageId));
+        return ResponseEntity.ok(image);
+        //return ResponseEntity.ok(imageRepository.getById(imageId));
     }
 
     @PostMapping(path = "", produces = "application/json")
     public ResponseEntity<Image> postImage(@RequestBody Image image) {
-        return ResponseEntity.ok(imageRepository.saveImage(image));
+        return ResponseEntity.ok(imageRepository.save(image));
     }
 
 }
