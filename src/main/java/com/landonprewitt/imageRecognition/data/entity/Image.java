@@ -18,10 +18,6 @@ import java.util.List;
 @AllArgsConstructor
 @Entity
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-@TypeDef(
-        name = "list-arrayy",
-        typeClass = ListArrayType.class
-)
 public class Image {
 
     @Id
