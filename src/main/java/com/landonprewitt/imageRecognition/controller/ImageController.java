@@ -1,8 +1,11 @@
 package com.landonprewitt.imageRecognition.controller;
 
+import com.landonprewitt.imageRecognition.data.entity.DetectedObject;
 import com.landonprewitt.imageRecognition.data.entity.Image;
+import com.landonprewitt.imageRecognition.data.repository.DetectedObjectRepository;
 import com.landonprewitt.imageRecognition.data.repository.ImageRepository;
 import com.landonprewitt.imageRecognition.exception.ImageNotFoundException;
+import com.landonprewitt.imageRecognition.service.ImageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -14,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.PostConstruct;
 import java.util.List;
 
 @RestController
@@ -23,12 +27,7 @@ import java.util.List;
 @Slf4j
 public class ImageController {
 
-    private final ImageRepository imageRepository;
-
-//    @GetMapping(path = "", produces = "application/json")
-//    public ResponseEntity<List<Image>> getImages() {
-//        return ResponseEntity.ok(imageRepository.getAllImages());
-//    }
+    private final ImageService imageService;
 
     @Operation(summary = "Retrieves Images Containing listed Objects",
             method = "/images?objects=\"\"",
@@ -43,23 +42,9 @@ public class ImageController {
     })
     @GetMapping(path = "", produces = "application/json")
     public ResponseEntity<List<Image>> getImagesByObjects(@RequestParam(required = false) String objects) {
-        log.info(String.format("objects = %s", objects));
-
-        if (objects instanceof String) {
-            // todo : find by Objects
-            log.info("Instance of String");
-
-        } else if (objects == null) {
-            // todo : find ALL images
-            log.info("Instance of null");
-        } else {
-            // todo : return 404
-            log.info("getImagesByObjects 404");
-        }
-
-        String[] names = {"hello", "hi"};
-
-        return ResponseEntity.ok(imageRepository.findAll());
+        if (objects.isEmpty()) return ResponseEntity.ok(imageService.findAll());
+        return ResponseEntity.ok(imageService.findByObjects(objects));
+        // todo : if no images returned, provided 404
     }
 
     @Operation(summary = "Retrieves Images by their ID",
@@ -74,16 +59,13 @@ public class ImageController {
     })
     @GetMapping(path = "/{imageId}", produces = "application/json")
     public ResponseEntity<Image> findById(@PathVariable Integer imageId) {
-        log.info(String.format("getImageById: %s", imageId));
-        Image image = imageRepository.findImageById(imageId).orElseThrow(
-                () -> new ImageNotFoundException("Image Not Found by id : " + imageId));
-        return ResponseEntity.ok(image);
-        //return ResponseEntity.ok(imageRepository.getById(imageId));
+        return ResponseEntity.ok(imageService.findById(imageId));
+        // todo : test image not found status using swagger
     }
 
     @PostMapping(path = "", produces = "application/json")
     public ResponseEntity<Image> postImage(@RequestBody Image image) {
-        return ResponseEntity.ok(imageRepository.save(image));
+        return ResponseEntity.ok(imageService.addObjects(image));
     }
 
 }

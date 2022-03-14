@@ -1,10 +1,13 @@
 package com.landonprewitt.imageRecognition;
 
+import com.landonprewitt.imageRecognition.data.entity.Image;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+
+import javax.annotation.PostConstruct;
 
 @SpringBootApplication
 public class ImageRecognitionApplication {
@@ -23,6 +26,16 @@ public class ImageRecognitionApplication {
 				.description("Object Recognition Swagger Open API")
 				.version("v1.0.0");
 		return info;
+	}
+
+	@PostConstruct
+	public void PostContruct() {
+//		Image image = Image.builder()
+//				.imageData("Image Data")
+//				.label("Sample Image")
+//				.objectionDetectionEnabled(true)
+//				.build();
+
 	}
 
 }
