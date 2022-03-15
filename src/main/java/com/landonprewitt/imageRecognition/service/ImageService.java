@@ -5,18 +5,23 @@ import com.landonprewitt.imageRecognition.data.entity.Image;
 import com.landonprewitt.imageRecognition.data.repository.DetectedObjectRepository;
 import com.landonprewitt.imageRecognition.data.repository.ImageRepository;
 import com.landonprewitt.imageRecognition.exception.ImageNotFoundException;
+import com.landonprewitt.imageRecognition.exception.ObjectQueryException;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-@Service
 @Slf4j
+@Service
+@AllArgsConstructor
 public class ImageService {
 
     private ImageRepository imageRepository;
+    private DetectedObjectService detectedObjectService;
     private DetectedObjectRepository detectedObjectRepository;
 
     @PostConstruct
@@ -49,18 +54,28 @@ public class ImageService {
         // todo: make sure not to include duplicates of images
         log.info(String.format("Find By objects = %s", objects));
         List<Image> images = new ArrayList<>();
+        List<String> objectNames = parseObjectQuery(objects);
+        List<DetectedObject> detectedObjects = detectedObjectService.findObjectsByName(objectNames);
+
         return images;
     }
 
-    public List<DetectedObject> parseObjectQuery(String objects) {
-        // todo: Parse object query list, checking and filter "" marks
-        List<DetectedObject> parsedObjects = new ArrayList<>();
-        // Check for "" In the Parameter
-
-        return parsedObjects;
+    public List<String> parseObjectQuery(String objects) {
+        if (objects.charAt(0) == '\"' && objects.charAt(objects.length()-1) == '\"') {
+           List<String> objectNames = Arrays.asList(objects
+                   .replace("\"", "")
+                   .replace(" ", "")
+                   .split(","));
+           return objectNames;
+        } else {
+            throw new ObjectQueryException(String.format("Improper Object Query Format: %s", objects));
+            // todo : test that this exception returns proper http response
+        }
     }
 
     public Image addObjects(Image image) {
+
+        // todo : make sure object names are case insensitive
         DetectedObject detectedObject = detectedObjectRepository.findAll().get(0);
         Image savedImage = imageRepository.save(image);
         detectedObject.addImage(savedImage);

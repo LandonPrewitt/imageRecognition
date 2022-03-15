@@ -65,7 +65,7 @@ public class ImageController {
 
     @PostMapping(path = "", produces = "application/json")
     public ResponseEntity<Image> postImage(@RequestBody Image image) {
-        return ResponseEntity.ok(imageService.addObjects(image));
+        return ResponseEntity.ok(imageService.addImage(image));
     }
 
 }
