@@ -1,6 +1,6 @@
-package com.landonprewitt.imageRecognition.data.repository;
+package com.landonprewitt.imagerecognition.data.repository;
 
-import com.landonprewitt.imageRecognition.data.entity.Image;
+import com.landonprewitt.imagerecognition.data.entity.Image;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;

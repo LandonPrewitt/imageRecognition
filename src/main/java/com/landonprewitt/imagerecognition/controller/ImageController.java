@@ -1,11 +1,8 @@
-package com.landonprewitt.imageRecognition.controller;
+package com.landonprewitt.imagerecognition.controller;
 
-import com.landonprewitt.imageRecognition.data.entity.DetectedObject;
-import com.landonprewitt.imageRecognition.data.entity.Image;
-import com.landonprewitt.imageRecognition.data.repository.DetectedObjectRepository;
-import com.landonprewitt.imageRecognition.data.repository.ImageRepository;
-import com.landonprewitt.imageRecognition.exception.ImageNotFoundException;
-import com.landonprewitt.imageRecognition.service.ImageService;
+import com.landonprewitt.imagerecognition.data.entity.Image;
+import com.landonprewitt.imagerecognition.exception.ImageNotFoundException;
+import com.landonprewitt.imagerecognition.service.ImageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -17,7 +14,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.PostConstruct;
 import java.util.List;
 
 @RestController
@@ -38,13 +34,17 @@ public class ImageController {
             @ApiResponse(responseCode = "200", description = "Images Found",
                     content = {@Content(mediaType = "application/json", schema = @Schema(implementation = Image.class))}),
             @ApiResponse(responseCode = "404", description = "No Images Found",
+                    content = {@Content()}),
+            @ApiResponse(responseCode = "406", description = "Unacceptable Query Format",
                     content = {@Content()})
     })
     @GetMapping(path = "", produces = "application/json")
     public ResponseEntity<List<Image>> getImagesByObjects(@RequestParam(required = false) String objects) {
-        if (objects.isEmpty()) return ResponseEntity.ok(imageService.findAll());
-        return ResponseEntity.ok(imageService.findByObjects(objects));
-        // todo : if no images returned, provided 404
+        List<Image> foundImages =
+                (objects == null || objects.isEmpty()) ? imageService.findAll() : imageService.findByObjects(objects);
+        if (foundImages.isEmpty()) throw new ImageNotFoundException("No Images found");
+        return ResponseEntity.ok(foundImages);
+
     }
 
     @Operation(summary = "Retrieves Images by their ID",
@@ -60,7 +60,6 @@ public class ImageController {
     @GetMapping(path = "/{imageId}", produces = "application/json")
     public ResponseEntity<Image> findById(@PathVariable Integer imageId) {
         return ResponseEntity.ok(imageService.findById(imageId));
-        // todo : test image not found status using swagger
     }
 
     @PostMapping(path = "", produces = "application/json")
