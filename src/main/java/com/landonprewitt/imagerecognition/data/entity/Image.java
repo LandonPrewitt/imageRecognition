@@ -1,8 +1,7 @@
-package com.landonprewitt.imageRecognition.data.entity;
+package com.landonprewitt.imagerecognition.data.entity;
 
-import com.fasterxml.jackson.annotation.JsonFilter;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,9 +9,8 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.*;
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -24,24 +22,27 @@ import java.util.Set;
 public class Image {
 
     @Id
-    @Column(name = "image_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Integer id;
     private String label;
     private String imageData;
     private boolean objectionDetectionEnabled;
 
-    @ManyToMany(mappedBy = "images")
-    @JsonIgnore
-    private Set<DetectedObject> detectedObjects = new HashSet<>();
+    @ManyToMany
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    @JoinTable(
+            name = "Image_DetectedObject",
+            joinColumns = @JoinColumn(name = "image_id"),
+            inverseJoinColumns = @JoinColumn(name = "object_name")
+    )
+    private List<DetectedObject> detectedObjects = new ArrayList<>();
 
     public void addObject(DetectedObject object) {
         detectedObjects.add(object);
     }
 
     public void addObjects(List<DetectedObject> detectedObjects) {
-        log.info(String.format("Adding Object to image: %s", detectedObjects.get(0).getName()));
         this.getDetectedObjects().addAll(detectedObjects);
-        log.info(String.format("Objects added: " + this.detectedObjects));
     }
 }
