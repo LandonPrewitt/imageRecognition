@@ -1,15 +1,18 @@
-package com.landonprewitt.imagerecognition.service;
+package com.landonprewitt.imagerecognition.service.entityservice;
 
 import com.landonprewitt.imagerecognition.data.entity.DetectedObject;
 import com.landonprewitt.imagerecognition.data.entity.Image;
-import com.landonprewitt.imagerecognition.data.repository.DetectedObjectRepository;
 import com.landonprewitt.imagerecognition.data.repository.ImageRepository;
 import com.landonprewitt.imagerecognition.exception.ImageNotFoundException;
 import com.landonprewitt.imagerecognition.exception.ObjectQueryException;
+import com.landonprewitt.imagerecognition.service.imaggaservice.ImaggaTagsService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -19,14 +22,31 @@ import java.util.stream.Collectors;
 public class ImageService {
 
     private ImageRepository imageRepository;
+    private ImaggaTagsService imaggaTagsService;
     private DetectedObjectService detectedObjectService;
-    private DetectedObjectRepository detectedObjectRepository;
 
-    public Image addImage(Image image) {
-        if (image.isObjectionDetectionEnabled()) {
-            DetectedObject detectedObject = detectedObjectRepository.findAll().get(0);
-            return addObjects(detectedObject, image);
+    public Image addImage(Image image, MultipartFile imageFile) throws IOException {
+
+        // Add tags if required
+        if (image.isObjectionDetectionEnabled() && !(image.getUrl().isEmpty() && imageFile == null )) {
+            List<DetectedObject> detectedObjects = (imageFile == null && !image.getUrl().isEmpty()) ?
+                    detectedObjectService.addObjectsByNames(imaggaTagsService.getTagsByURL(image.getUrl())) :
+                    detectedObjectService.addObjectsByNames(imaggaTagsService.getTagsByFile(imageFile));
+            image.addObjects(detectedObjects);
         }
+
+        // Get the Image Data
+        if (imageFile != null) {
+            image.setImageData(Base64.getEncoder().encode(imageFile.getBytes()));
+        }
+
+        // Provide Default Label -- If tags exists, uses first in list
+        if (image.getLabel() == null || image.getLabel().isEmpty()) {
+            if (image.getDetectedObjects().isEmpty()) image.setLabel("Default Label");
+            image.setLabel(image.getDetectedObjects().get(0).getName());
+        }
+
+        // Save and return completed Image
         return imageRepository.save(image);
     }
 
@@ -51,21 +71,16 @@ public class ImageService {
     }
 
     public List<String> parseObjectQuery(String objects) {
-        if (objects.charAt(0) == '\"' && objects.charAt(objects.length()-1) == '\"') {
-           return Arrays.asList(objects
-                   .toLowerCase(Locale.ROOT)
-                   .replace("\"", "")
-                   .replace(" ", "")
-                   .split(","));
+        if (objects.startsWith("\"") && objects.endsWith("\"")) {
+           return Arrays.stream(objects.split(","))
+                   .map(name -> name
+                           .toLowerCase(Locale.ROOT)
+                           .replace("\"", "")
+                           .trim())
+                   .collect(Collectors.toList());
         } else {
             throw new ObjectQueryException(String.format("Improper Object Query Format - Missing Quotation Marks: %s", objects));
         }
     }
-
-    public Image addObjects(DetectedObject object, Image image) {
-        image.addObject(object);
-        return imageRepository.save(image);
-    }
-
 
 }

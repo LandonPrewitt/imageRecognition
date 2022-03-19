@@ -1,79 +1,70 @@
 package com.landonprewitt.imagerecognition;
 
-import com.landonprewitt.imagerecognition.data.entity.DetectedObject;
 import com.landonprewitt.imagerecognition.data.entity.Image;
-import com.landonprewitt.imagerecognition.data.repository.ImageRepository;
-import com.landonprewitt.imagerecognition.service.DetectedObjectService;
+import com.landonprewitt.imagerecognition.service.entityservice.ImageService;
+import com.sun.org.apache.xpath.internal.operations.Mult;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.tomcat.util.http.fileupload.IOUtils;
+import org.apache.tomcat.util.http.fileupload.disk.DiskFileItem;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
+import java.io.*;
 import java.util.ArrayList;
-import java.util.Locale;
 
 @SpringBootApplication
+@Slf4j
 public class ImageRecognitionApplication {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		ConfigurableApplicationContext configurableApplicationContext =
 				SpringApplication.run(ImageRecognitionApplication.class, args);
-		ImageRepository imageRepository = configurableApplicationContext.getBean(ImageRepository.class);
-		DetectedObjectService detectedObjectService = configurableApplicationContext
-				.getBean(DetectedObjectService.class);
+		ImageService imageService = configurableApplicationContext.getBean(ImageService.class);
 
-		DetectedObject carObject = DetectedObject.builder()
-				.name("car")
-				.build();
-		detectedObjectService.addObject(carObject);
-		DetectedObject houseObject = DetectedObject.builder()
-				.name("house")
-				.build();
-		detectedObjectService.addObject(houseObject);
-		DetectedObject officeObject = DetectedObject.builder()
-				.name("office")
-				.build();
-		detectedObjectService.addObject(officeObject);
-		DetectedObject officeTwoObject = DetectedObject.builder()
-				.name("OfFice".toLowerCase(Locale.ROOT))
-				.build();
-		detectedObjectService.addObject(officeTwoObject);
-
-		String imageData = "image data";
+		// Load Sample Data
+		byte[] imageData = "Image Data".getBytes();
 		Image houseImage = Image.builder()
-				.imageData(imageData)
+		//		.imageData(imageData)
 				.objectionDetectionEnabled(true)
-				.label("houseImage")
+				.url("https://www.rocketmortgage.com/resources-cmsassets/RocketMortgage.com/Article_Images/Large_Images/TypesOfHomes/types-of-homes-hero.jpg")
 				.detectedObjects(new ArrayList<>())
 				.build();
-		houseImage = imageRepository.save(houseImage);
-		Image carImage = Image.builder()
-				.imageData(imageData)
+		imageService.addImage(houseImage, null);
+		Image baseballImage = Image.builder()
+		//		.imageData(imageData)
 				.objectionDetectionEnabled(true)
-				.label("carImage")
+				.label("baseballImage")
+				.url("https://sportshub.cbsistatic.com/i/2022/03/10/a157d2e7-71a8-4c6c-87e0-69ba2d32dc59/mlb-lockout-12.png")
 				.detectedObjects(new ArrayList<>())
 				.build();
-		carImage = imageRepository.save(carImage);
-		Image officeImage = Image.builder()
-				.imageData(imageData)
+		imageService.addImage(baseballImage, null);
+		Image basketballImage = Image.builder()
+		//		.imageData(imageData)
 				.objectionDetectionEnabled(true)
-				.label("officeImage")
+				.label("basketballImage")
+				.url("https://www.masterclass.com/course-images/attachments/6zx7878KdosvRmjEgdpf39Db?width=400&height=400&fit=cover&dpr=2")
 				.detectedObjects(new ArrayList<>())
 				.build();
-		officeImage = imageRepository.save(officeImage);
+		imageService.addImage(basketballImage, null);
 
-		houseImage.addObject(houseObject);
-		carImage.addObject(carObject);
-		officeImage.addObject(officeObject);
-
-		houseImage = imageRepository.save(houseImage);
-		imageRepository.save(carImage);
-		imageRepository.save(officeImage);
-
-		houseImage.addObject(carObject);
-		imageRepository.save(houseImage);
+		File file = new File("src/main/resources/static/sampleImages/boat.jpg");
+		InputStream stream = new FileInputStream(file);
+		MultipartFile multipartFile = new MockMultipartFile("file", file.getName(), MediaType.TEXT_HTML_VALUE, stream);
+		Image boatImage = Image.builder()
+				.objectionDetectionEnabled(true)
+				.label("boatImage")
+				.detectedObjects(new ArrayList<>())
+				.build();
+		imageService.addImage(boatImage, multipartFile);
+		log.info("App Ready!");
 	}
 
 	@Bean

@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
-import javax.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,7 +17,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-//@Table(name = "Detected_Object")
 public class DetectedObject {
 
     @Id
@@ -27,9 +25,5 @@ public class DetectedObject {
     @JsonIgnore
     @ManyToMany(mappedBy = "detectedObjects")
     private List<Image> images = new ArrayList<>();
-
-    public void addImage(Image image) {
-        this.images.add(image);
-    }
 
 }
