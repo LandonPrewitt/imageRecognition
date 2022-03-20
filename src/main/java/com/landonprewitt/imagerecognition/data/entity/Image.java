@@ -1,5 +1,6 @@
 package com.landonprewitt.imagerecognition.data.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -17,7 +18,6 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @Entity
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Slf4j
 public class Image {
 
@@ -26,9 +26,10 @@ public class Image {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Integer id;
     private String label;
-    private String imageData;
-    private boolean objectionDetectionEnabled;
-
+    @Builder.Default
+    private String url = "";
+    @Builder.Default
+    private boolean objectionDetectionEnabled = false; // TODO :: True or False Default Value?
     @ManyToMany
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @JoinTable(
@@ -36,13 +37,12 @@ public class Image {
             joinColumns = @JoinColumn(name = "image_id"),
             inverseJoinColumns = @JoinColumn(name = "object_name")
     )
+    @Builder.Default
     private List<DetectedObject> detectedObjects = new ArrayList<>();
-
-    public void addObject(DetectedObject object) {
-        detectedObjects.add(object);
-    }
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private byte[] imageData;
 
     public void addObjects(List<DetectedObject> detectedObjects) {
-        this.getDetectedObjects().addAll(detectedObjects);
+        this.detectedObjects.addAll(detectedObjects);
     }
 }

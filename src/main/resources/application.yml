@@ -8,12 +8,21 @@ server:
 spring:
   application:
     name: ImageRecognition
+  servlet:
+    multipart:
+      enabled: true
+      file-size-threshold: 0
   datasource:
     url: jdbc:postgresql://localhost:5432/imagedb
     username: postgres
     password: postgres
   jpa:
-    show-sql: true
+    show-sql: false
     hibernate:
       ddl-auto: create
 
+imagga:
+  baseUrl: "https://api.imagga.com/v2"
+  user: "acc_ff5a6dec0b5e301"
+  password: "21278441ea4e45bd830b9a85aa76e967"
+  threshold: 50.0
