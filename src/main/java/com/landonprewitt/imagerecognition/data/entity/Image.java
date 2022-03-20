@@ -1,7 +1,5 @@
 package com.landonprewitt.imagerecognition.data.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,7 +27,7 @@ public class Image {
     @Builder.Default
     private String url = "";
     @Builder.Default
-    private boolean objectionDetectionEnabled = false; // TODO :: True or False Default Value?
+    private boolean objectionDetectionEnabled = false; // Default = False to mimimize work load
     @ManyToMany
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @JoinTable(

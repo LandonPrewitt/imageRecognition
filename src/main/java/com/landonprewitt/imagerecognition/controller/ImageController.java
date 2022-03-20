@@ -17,9 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.Base64;
 import java.util.List;
 
 @RestController
@@ -67,15 +65,18 @@ public class ImageController {
         return ResponseEntity.ok(imageService.findById(imageId));
     }
 
-    @PostMapping(path = "", produces = "application/json", consumes = {
-            MediaType.APPLICATION_JSON_VALUE,
-            MediaType.MULTIPART_FORM_DATA_VALUE,
-            MediaType.IMAGE_JPEG_VALUE,
-            MediaType.IMAGE_PNG_VALUE,
-            "multipart/form-data",
-            "image/jpeg",
-            "image/jpg"
+    @Operation(summary = "Post a new Image",
+            description = "Send a JSON request body including an image file or URL, an optional label for the\n" +
+                    "image, and an optional field to enable object detection.\n Returns a HTTP 200 OK with a JSON response body including the image data, its label\n" +
+                    "(generate one if the user did not provide it), its identifier provided by the persistent data\n" +
+                    "store, and any objects detected (if object detection was enabled).")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Image Saved",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = Image.class))}),
+            @ApiResponse(responseCode = "400", description = "Missing Image File or Image URL",
+                    content = {@Content()})
     })
+    @PostMapping(path = "", produces = "application/json", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Image> postImage(
             @RequestPart(value = "image") Image image,
             @RequestPart(required = false, value = "imageFile") MultipartFile imageFile) throws IOException {
