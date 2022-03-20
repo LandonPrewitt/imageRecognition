@@ -13,7 +13,7 @@ spring:
       enabled: true
       file-size-threshold: 0
   datasource:
-    url: jdbc:postgresql://localhost:5432/imagedb
+    url: jdbc:postgresql://postgresqldb:5432/imagedb
     username: postgres
     password: postgres
   jpa:

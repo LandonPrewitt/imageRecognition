@@ -29,14 +29,14 @@ public class ImageService {
 
         // Add tags if required
         if (image.isObjectionDetectionEnabled() && !(image.getUrl().isEmpty() && imageFile == null )) {
-            List<DetectedObject> detectedObjects = (imageFile == null && !image.getUrl().isEmpty()) ?
+            List<DetectedObject> detectedObjects = (!image.getUrl().isEmpty()) ?
                     detectedObjectService.addObjectsByNames(imaggaTagsService.getTagsByURL(image.getUrl())) :
                     detectedObjectService.addObjectsByNames(imaggaTagsService.getTagsByFile(imageFile));
             image.addObjects(detectedObjects);
         }
 
         // Get the Image Data
-        if (imageFile != null) {
+        if (image.getUrl().isEmpty() && imageFile != null) {
             image.setImageData(Base64.getEncoder().encode(imageFile.getBytes()));
         }
 

@@ -1,6 +1,10 @@
 package com.landonprewitt.imagerecognition.service.imaggaservice;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonParser;
 import com.landonprewitt.imagerecognition.config.ImaggaConfig;
+import com.landonprewitt.imagerecognition.exception.ImaggaImageException;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -44,13 +48,17 @@ public class ImaggaTagsService {
     }
 
     public List<String> parseTagsResponse(String response) {
+        if (response.startsWith("HttpResponse Exception")) {
+            log.warn(response);
+            throw new ImaggaImageException("");
+        }
+
         List<String> tags = new ArrayList<>();
         JSONObject result = new JSONObject(response).getJSONObject("result");
         JSONArray jsonArray = result.getJSONArray("tags");
         for (int i=0; i<jsonArray.length(); i++) {
             tags.add(jsonArray.getJSONObject(i).getJSONObject("tag").getString("en").trim());
-        }
-        return tags;
+        } return tags;
     }
 
     public String sendGETRequestUsingImageURL(String imageURL) {
@@ -107,27 +115,16 @@ public class ImaggaTagsService {
 
         DataOutputStream request = new DataOutputStream(connection.getOutputStream());
 
-        String requestBody = "";
-
-        requestBody = requestBody + (twoHyphens + boundary + crlf);
-        requestBody = requestBody + ("Content-Disposition: form-data; name=\"image\";filename=\"" + fileToUpload.getName() + "\"" + crlf);
-        requestBody = requestBody + (crlf);
-
         request.writeBytes(twoHyphens + boundary + crlf);
         request.writeBytes("Content-Disposition: form-data; name=\"image\";filename=\"" + fileToUpload.getName() + "\"" + crlf);
         request.writeBytes(crlf);
 
-//        InputStream inputStream = new FileInputStream(fileToUpload);
         InputStream inputStream = fileToUpload.getInputStream();
         int bytesRead;
         byte[] dataBuffer = new byte[1024];
         while ((bytesRead = inputStream.read(dataBuffer)) != -1) {
             request.write(dataBuffer, 0, bytesRead);
-            requestBody = requestBody + (dataBuffer.toString());
         }
-
-        requestBody.concat(crlf);
-        requestBody.concat(twoHyphens + boundary + twoHyphens + crlf);
 
         request.writeBytes(crlf);
         request.writeBytes(twoHyphens + boundary + twoHyphens + crlf);
@@ -153,45 +150,5 @@ public class ImaggaTagsService {
         connection.disconnect();
 
         return response;
-
     }
-
-    //    public String sendPOSTRequestUsingImageData(byte[] imageData, Double threshold) {
-//
-//        try {
-//            String crlf = "\r\n";
-//            String twoHyphens = "--";
-//            String boundary =  "Image Upload";
-//            String requestBody = "";
-//
-//            requestBody = requestBody + (twoHyphens + boundary + crlf);
-//            requestBody = requestBody + ("Content-Disposition: form-data; name=\"image\";" + "\"" + crlf);
-//            requestBody = requestBody + (crlf);
-//            requestBody = requestBody + (imageData);
-//
-//            String thresholdParam = "threshold=" + threshold;
-//            String url = imaggaConfig.getBaseUrl() + ENDPOINT + "?" + thresholdParam ;
-//            HttpHeaders headers = new HttpHeaders();
-//            headers.add("Content-Type", "multipart/form-data;boundary=" + boundary);
-//            headers.setConnection("Keep-Alive");
-//            headers.setCacheControl("no-cache");
-//
-//            headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-//            HttpEntity<String> entity = new HttpEntity<>(requestBody, headers);
-//            log.info(String.format("Executing ImaggaService Request: %n"
-//                    + "-TYPE: Get %n"
-//                    + "-URL: %s%n"
-//                    + "-HEADERS: %s%n" , url, headers));
-//            return restTemplate.postForObject(url,entity,String.class);
-//        } catch (HttpStatusCodeException e) {
-//            HttpHeaders headers = e.getResponseHeaders();
-//            return String.format("HttpResponse Exception: %n"
-//                            + "-Status Text: %s%n"
-//                            + "-Body: %s%n"
-//                            + "-Content-Type: %s%n"
-//                            + "-Server: %s",
-//                    e.getStatusText(), e.getResponseBodyAsString(), headers.get("Content-Type"), headers.get("Server"));
-//        }
-//    }
-
 }
