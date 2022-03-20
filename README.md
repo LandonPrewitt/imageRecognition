@@ -34,6 +34,7 @@ The App should be running successfully at this point. Now let's interact with it
 <hr />
 
 ### Options 
+* <b>Object Detection Accuracy</b> - In the [properties file](src/main/resources/application.yml), you can configure the imagga.threshold value to set a threshold for how certain it knows the provided object is in the image. 
 * If you want to run the App locally, <b>NOT</b> on docker, make sure your active profile is set to 'local'. This is to ensure the postgres url is pointing to local port and not to dockker Container
 * If you'd like to spin up a single Postgres container for testing locally, to debug, or run the app in your ide; run the following command in your
 terminal: 
