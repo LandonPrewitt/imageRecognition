@@ -45,7 +45,7 @@ public class ImageService {
         // Provide Default Label -- If tags exists, uses first in list
         if (image.getLabel() == null || image.getLabel().isEmpty()) {
             if (image.getDetectedObjects().isEmpty()) image.setLabel("Default Label");
-            image.setLabel(image.getDetectedObjects().get(0).getName());
+            else image.setLabel(image.getDetectedObjects().get(0).getName());
         }
 
         // Save and return completed Image
