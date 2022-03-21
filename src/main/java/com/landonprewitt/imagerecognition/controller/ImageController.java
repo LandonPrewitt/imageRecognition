@@ -45,7 +45,7 @@ public class ImageController {
     @GetMapping(path = "", produces = "application/json")
     public ResponseEntity<List<Image>> getImagesByObjects(@RequestParam(required = false) String objects) {
         List<Image> foundImages =
-                (objects == null || objects.isEmpty()) ? imageService.findAll() : imageService.findByObjects(objects);
+                (objects == null || objects.isEmpty()) ? imageService.findAll() : imageService.findByObjectQuery(objects);
         if (foundImages.isEmpty()) throw new ImageNotFoundException("No Images found");
         return ResponseEntity.ok(foundImages);
     }

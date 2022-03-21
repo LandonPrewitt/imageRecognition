@@ -62,7 +62,7 @@ public class ImageService {
                 () -> new ImageNotFoundException("Image Not Found by id : " + imageId));
     }
 
-    public List<Image> findByObjects(String objects) {
+    public List<Image> findByObjectQuery(String objects) {
         log.info(String.format("Find By objects = %s", objects));
         List<String> objectNames = parseObjectQuery(objects);
         List<DetectedObject> detectedObjects = detectedObjectService.findObjectsByName(objectNames);
@@ -79,6 +79,8 @@ public class ImageService {
                            .toLowerCase(Locale.ROOT)
                            .replace("\"", "")
                            .trim())
+                   .distinct()
+                   .filter(name -> !name.isEmpty())
                    .collect(Collectors.toList());
         } else {
             throw new ObjectQueryException(String.format("Improper Object Query Format - Missing Quotation Marks: %s", objects));

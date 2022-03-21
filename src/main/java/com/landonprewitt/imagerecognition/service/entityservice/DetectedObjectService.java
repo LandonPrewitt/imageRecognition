@@ -15,11 +15,6 @@ public class DetectedObjectService {
 
     private DetectedObjectRepository detectedObjectRepository;
 
-    public DetectedObject addObject(DetectedObject object) {
-        object.setName(object.getName().toLowerCase(Locale.ROOT)); // Case Insensitivity
-        return detectedObjectRepository.save(object);
-    }
-
     public List<DetectedObject> addObjectsByNames(List<String> objectNames) {
         return detectedObjectRepository.saveAll(objectNames.stream()
                 .map(objectName -> DetectedObject.builder()
