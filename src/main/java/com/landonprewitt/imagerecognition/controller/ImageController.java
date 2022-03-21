@@ -61,7 +61,7 @@ public class ImageController {
                     content = {@Content()})
     })
     @GetMapping(path = "/{imageId}", produces = "application/json")
-    public ResponseEntity<Image> findById(@PathVariable Integer imageId) {
+    public ResponseEntity<Image> getById(@PathVariable Integer imageId) {
         return ResponseEntity.ok(imageService.findById(imageId));
     }
 
