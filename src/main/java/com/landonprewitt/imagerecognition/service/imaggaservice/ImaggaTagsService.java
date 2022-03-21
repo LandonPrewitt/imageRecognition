@@ -1,8 +1,5 @@
 package com.landonprewitt.imagerecognition.service.imaggaservice;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonParser;
 import com.landonprewitt.imagerecognition.config.ImaggaConfig;
 import com.landonprewitt.imagerecognition.exception.ImaggaImageException;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +18,10 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.Collections;
+import java.util.List;
 
 @Slf4j
 @Service
