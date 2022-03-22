@@ -12,10 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -47,6 +44,14 @@ public class ImageService {
             if (image.getDetectedObjects().isEmpty()) image.setLabel("Default Label");
             else image.setLabel(image.getDetectedObjects().get(0).getName());
         }
+
+        // Handle Image Duplication via Hash Value
+        Integer hash = (image.getImageData() == null || !image.getUrl().isEmpty()) ?
+                Objects.hash(image.getLabel(), image.getUrl()) :
+                Objects.hash(image.getLabel(), Arrays.hashCode(Arrays.copyOfRange(image.getImageData(),
+                        image.getImageData().length - 50,
+                        image.getImageData().length)));
+        image.setId(hash);
 
         // Save and return completed Image
         return imageRepository.save(image);
