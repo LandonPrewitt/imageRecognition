@@ -1,14 +1,14 @@
 package com.landonprewitt.imagerecognition;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
+//@SpringBootTest
 class ImageRecognitionApplicationTests {
 
-    // TODO :: Write UNIT TESTS!!!
-//	@Test
-//	void contextLoads() {
-//	}
+	@Test
+	@Disabled
+	void contextLoads() {
+	}
 
 }

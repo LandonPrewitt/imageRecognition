@@ -20,9 +20,8 @@ import java.util.List;
 public class Image {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private Integer id;
+    private Integer id; // Generated via Hash of (label, url || imageData)
     private String label;
     @Builder.Default
     private String url = "";
