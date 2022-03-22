@@ -80,10 +80,9 @@ public class ImageController {
     public ResponseEntity<Image> postImage(
             @RequestPart(value = "image") Image image,
             @RequestPart(required = false, value = "imageFile") MultipartFile imageFile) throws IOException {
-        // TODO :: Get working in swagger-ui
         // TODO :: Make POJO/DTO for Image Object
         if (imageFile == null && (image == null || image.getUrl().isEmpty())) {
-            throw new MissingImageDataException("Need at least one: Image File or Image URL");
+             throw new MissingImageDataException("Need at least one: Image File or Image URL");
         } return ResponseEntity.ok(imageService.addImage(image, imageFile));
     }
 

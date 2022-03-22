@@ -2,6 +2,7 @@ package com.landonprewitt.imagerecognition;
 
 import com.landonprewitt.imagerecognition.data.entity.Image;
 import com.landonprewitt.imagerecognition.service.entityservice.ImageService;
+import com.ulisesbocchio.jasyptspringboot.annotation.EnableEncryptableProperties;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +21,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 
 @SpringBootApplication
+@EnableEncryptableProperties
 @Slf4j
 public class ImageRecognitionApplication {
 

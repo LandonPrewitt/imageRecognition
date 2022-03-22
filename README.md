@@ -12,6 +12,7 @@ Make sure you meet all the following requirements
 <hr />
 
 ### Options & Notes
+* <b>Easter Egg ;) </b> - There is an easter egg in the code, hopefully you find it!
 * <b>Object Detection Accuracy</b> - In the [properties file](src/main/resources/application.yml), you can configure the 'imagga.threshold' value to set a threshold for how certain it knows the provided object is in the image.
   * If running via Docker: For changes to take effect, you must 1) Reinstall mvn package -- 2) Rebuild the application image -- 3) re-run docker-compose.
 * <b>POST /images</b>
