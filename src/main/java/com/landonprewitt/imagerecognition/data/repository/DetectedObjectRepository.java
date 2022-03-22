@@ -9,8 +9,6 @@ import java.util.List;
 @Repository
 public interface DetectedObjectRepository extends JpaRepository<DetectedObject, Integer> {
 
-    List<DetectedObject> findByNameIn(List<String> names);
-
     List<DetectedObject> findAllByNameIn(List<String> names);
 
 }
